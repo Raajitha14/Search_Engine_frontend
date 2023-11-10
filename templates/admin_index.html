@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Google Search</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="./admin_index.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com/">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+    </head>
+    <body>
+    
+        
+        <div class="d-flex align-items-center min-vh-100">
+            <!-- <row> -->
+           <div class="container">
+                <div class="d-flex justify-content-center itembox">
+                    <form class="form" action="" >
+                        <div class="d-flex justify-content-center align-items-center">
+                    <input class=" base d-flex justify-content-center" type="text" placeholder="Enter the url" name="q" id="url" required>                     
+                    <button  class="btn" type="button" onclick="addnewurl(event)">Add url</button>
+                </div>
+                    <table>
+                    
+                    <tr>
+                        <td>
+                            <span class="ScarpeEverything">Scrape everything:</span>
+                            <button  class="btn" type="button" onclick="scrapeAll()">Crawl</button>
+
+                        </td>
+                        
+                    </tr>
+                    <tr>
+
+                    </tr>
+                    <tr></tr>
+                <tr>
+                    <td>
+                       <center> <span class="main_text">URL INFO</span></center>
+                        <div id="scrape_response" class="d-flex justify-content-center ">
+                            <table id="crawlDataTable" border="3">
+
+                                <tr id="row1">
+                                    <td>
+                                        Crawl ID
+                                    </td>
+                                    <td>
+                                        URL
+                                    </td>
+                                    <td>
+                                        Status
+                                    </td>
+                                    <td>
+                                        Last updated date
+                                    </td>
+                                    <td>
+                                        Crawled Phone No File
+                                    </td>
+                                    <td>
+                                        Crawled email File
+                                    </td>
+                                    <td>
+                                        Crawled Social media links File
+                                    </td>
+                                </tr>
+            
+                            </table>
+                        </div>   
+                    </td>
+                    </tr>
+                    </table>
+                    </form>  
+                </div>      
+            </div>
+        <!-- </row>
+        <row> -->
+           
+        </div> 
+    <!-- </row> -->
+        <script>
+        fetchUrlData()
+        function fetchUrlData(){
+            fetch("http://127.0.0.1:5000/fetchall",{
+            method: "GET",
+  
+ 
+})
+  .then((response) => response.json())
+  .then((json) => {
+    if (json.length>0){
+    json.forEach((crawlData) => {
+    console.log(crawlData)
+    addRow(crawlData['crawl_id'],crawlData['url'],crawlData['email_file_path'],crawlData['phone no_file_path'],crawlData['social_media_link_path'],crawlData['last_modified'],crawlData['status'])
+
+});
+    
+}
+   
+
+})
+  .catch(err=>{console.log(err)})
+            }
+            
+        
+        
+        async function addnewurl(event)
+            {
+               
+                event.preventDefault()
+                console.log("in scrape")
+                const input_url=document.getElementById('url').value
+                if(input_url==""){
+                    alert("The url must be filled out");
+                }
+                else{
+                console.log(input_url)
+                fetch("http://127.0.0.1:5000/addnewurl", {
+                method: "POST",
+                body: JSON.stringify({
+                    url:input_url
+  })
+ 
+})
+  .then((response) => response.json())
+  .then((json) => {
+    if( json["status"]==200){
+        alert("url added successfully")
+    }
+    else{
+  alert("error occured while adding url. Please try again later")
+    }
+    location.reload()
+
+})
+  .catch(err=>{console.log(err)})
+            }
+        }
+
+    function scrapeAll(){
+        fetch("http://127.0.0.1:5000/scrapeall",{
+            method: "GET",
+  
+ 
+})
+  .then((response) => response.json())
+  .then((json) => {
+   alert("crawling initiated")
+   location.reload()
+
+})
+  .catch(err=>{console.log(err)})
+            }
+
+    
+        function addRow(id,url,em_file,ph_file,sm_file,last_updated_date,status) {
+        // Get the table element in which you want to add a row
+        let table = document.getElementById("crawlDataTable");
+
+        // Create a row using the insertRow() method and specify the index where you want to add the row
+        let row = table.insertRow(-1); // We are adding at the end
+
+        // Create table cells
+        let c1 = row.insertCell(0);
+        let c2 = row.insertCell(1);
+        let c3 = row.insertCell(2);
+        let c4 = row.insertCell(3);
+        let c5 = row.insertCell(4);
+        let c6 = row.insertCell(5);
+        let c7 = row.insertCell(6);
+
+
+        // Add data to c1, c2, and c3
+        c1.innerText = id;
+        c2.innerText=url;
+        c4.innerText=last_updated_date;
+        c3.innerText=status;
+
+        // Create download links
+        c5.innerHTML = `<a href="${ph_file}" download>Click here</a>`;
+        c6.innerHTML = `<a href="${em_file}" download>Click here</a>`;
+        c7.innerHTML = `<a href="${sm_file}" download>Click here</a>`;
+
+    }
+        
+
+  </script>    
+    </body>
+</html>

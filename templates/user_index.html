@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Google Search</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="./index.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com/">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md">
+            <ul class="navbar-nav ml-auto">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="./loginpage.html">Admin Login</a>
+                </li>
+            </ul>
+    </nav>
+        
+        <div class="d-flex align-items-center min-vh-100">
+            <!-- <row> -->
+           <div class="container">
+                <div class="d-flex justify-content-center itembox">
+                    <form class="form" action="" >
+                       <center> <h2 class="web_scraper">WEB SCRAPER</h2> </center> 
+                    <img class="imagej" src="./coding_key.png" alt="Not found">
+                   
+                    
+                    <input class="searchbox base d-flex justify-content-center" type="url" placeholder="Enter the url" name="q" id="url" required>&nbsp;             
+                    <table>
+                    <tr>
+                    <td><button class="btn" type="button" onclick="start_scrape(event)">Search</button></td>
+                    </tr>
+                    </table>
+                    </form>  
+                </div>      
+            </div>
+        <!-- </row>
+        <row> -->
+            <div id="scrape_response" class="d-flex justify-content-center crawlRes">
+                <table id="crawlDataTable" border="5">
+                    <tr>
+                        <td>
+                            URL
+                        </td>
+                        <td>
+                            Crawled Phone No File
+                        </td>
+                        <td>
+                            Crawled email File
+                        </td>
+                        <td>
+                            Crawled Social media links File
+                        </td>
+                    </tr>
+
+                </table>
+            </div>   
+        </div> 
+    <!-- </row> -->
+        <script>
+        
+        async function start_scrape(event)
+            {
+               
+                event.preventDefault()
+                console.log("in scrape")
+                const input_url=document.getElementById('url').value
+                if(input_url==""){
+                    alert("The url must be filled out");
+                }
+                else{
+                console.log(input_url)
+                fetch("http://127.0.0.1:5000/fetchData", {
+                method: "POST",
+                body: JSON.stringify({
+                    url:input_url
+  })
+ 
+})
+  .then((response) => response.json())
+  .then((json) => {
+let status=json['status']
+if(status==400){
+    alert('Invalid url')
+}
+else{
+json=json['data']
+let phone_no_file_path=json['phone no_file_path'];
+let social_media_file_path=json['social_media_link_path'];
+let email_file_path=json['email_file_path'];
+addRow(input_url,phone_no_file_path,email_file_path,social_media_file_path)
+}
+})
+
+  .catch(err=>{console.log(err)})
+            }
+        }
+
+    function addRow(url,ph_file,em_file,sm_file) {
+        // Get the table element in which you want to add a row
+        let table = document.getElementById("crawlDataTable");
+
+        // Create a row using the insertRow() method and specify the index where you want to add the row
+        let row = table.insertRow(-1); // We are adding at the end
+
+        // Create table cells
+        let c1 = row.insertCell(0);
+        let c2 = row.insertCell(1);
+        let c3 = row.insertCell(2);
+        let c4 = row.insertCell(3);
+
+
+        // Add data to c1, c2, and c3
+        c1.innerText = url;
+
+        // Create download links
+        c2.innerHTML = `<a href="${ph_file}" download>Click here</a>`;
+        c3.innerHTML = `<a href="${em_file}" download>Click here</a>`;
+        c4.innerHTML = `<a href="${sm_file}" download>Click here</a>`;
+    }
+
+
+
+ 
+
+
+        </script>     
+    </body>
+</html>
